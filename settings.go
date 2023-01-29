@@ -2,28 +2,28 @@ package configdn
 
 import "errors"
 
-type settings struct {
-	endpoint        string
-	refreshInterval int
-	authKey         string
+type Settings struct {
+	Endpoint        string
+	RefreshInterval int
+	AuthKey         string
 }
 
-func NewSettings(authKey string, endpoint string, refreshInterval int) (*settings, error) {
+func NewSettings(authKey string, endpoint string, refreshInterval int) (*Settings, error) {
 	if refreshInterval <= 0 {
-		return nil, errors.New("refresh interval should be a posotive integer")
+		return nil, errors.New("refresh interval should be a positive integer")
 	}
-	newSettings := settings{
-		authKey:         authKey,
-		endpoint:        endpoint,
-		refreshInterval: refreshInterval,
+	newSettings := Settings{
+		AuthKey:         authKey,
+		Endpoint:        endpoint,
+		RefreshInterval: refreshInterval,
 	}
 	return &newSettings, nil
 }
 
-func (s settings) changeRefreshInterval(refreshInterval int) error {
+func (s Settings) ChangeRefreshInterval(refreshInterval int) error {
 	if refreshInterval <= 0 {
-		return errors.New("refresh interval should be a posotive integer")
+		return errors.New("refresh interval should be a positive integer")
 	}
-	s.refreshInterval = refreshInterval
+	s.RefreshInterval = refreshInterval
 	return nil
 }
