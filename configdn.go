@@ -22,12 +22,12 @@ type ConfigDN struct {
 	FetchedConfig  map[string]ConfigValue
 }
 
-
+const version = "0.0.1"
 
 func (c ConfigDN) RefreshConfig(errorOnFail bool) error {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", c.Settings.Endpoint + "public_api/v1/get_config/", nil)
-	req.Header.Add("User-Agent", "ConfigDN-JS/0.0.1")
+	req, _ := http.NewRequest("GET", c.Settings.Endpoint+"public_api/v1/get_config/", nil)
+	req.Header.Add("ConfigDN-Client-Version", "ConfigDN-Go/"+version)
 	req.Header.Add("Authorization", c.Settings.AuthKey)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
@@ -55,7 +55,7 @@ func (c ConfigDN) RefreshConfig(errorOnFail bool) error {
 }
 
 func (c ConfigDN) GetLocal(key string) any {
-	if c.LastUpdateTime + c.Settings.RefreshInterval > int(time.Now().Unix()) {
+	if c.LastUpdateTime+c.Settings.RefreshInterval > int(time.Now().Unix()) {
 		defer c.RefreshConfig(false)
 	}
 
@@ -67,7 +67,7 @@ func (c ConfigDN) GetLocal(key string) any {
 }
 
 func (c ConfigDN) Get(key string) any {
-	if c.LastUpdateTime + c.Settings.RefreshInterval > int(time.Now().Unix()) {
+	if c.LastUpdateTime+c.Settings.RefreshInterval > int(time.Now().Unix()) {
 		c.RefreshConfig(false)
 	}
 	return c.GetLocal(key)
@@ -89,4 +89,8 @@ func NewCustomConfigDN(authKey string, apiEndpoint string, refreshInterval int) 
 		int(time.Now().Unix()),
 		map[string]ConfigValue{},
 	}
+}
+
+func main() {
+
 }

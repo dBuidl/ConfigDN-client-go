@@ -1,3 +1,3 @@
 module github.com/dBuidl/ConfigDN-client-go
 
-go 1.19
+go 1.20
