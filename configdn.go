@@ -90,7 +90,3 @@ func NewCustomConfigDN(authKey string, apiEndpoint string, refreshInterval int) 
 		map[string]ConfigValue{},
 	}
 }
-
-func main() {
-
-}
