@@ -50,8 +50,8 @@ func (c ConfigDN) RefreshConfig(errorOnFail bool) error {
 		return nil
 	}
 	var decodedResponse = InitialResponse{}
-	json.NewDecoder(resp.Body).Decode(&decodedResponse)
-	if !decodedResponse.S {
+	err = json.NewDecoder(resp.Body).Decode(&decodedResponse)
+	if !decodedResponse.S || err != nil {
 		if errorOnFail {
 			return ErrRefreshConfig
 		}
