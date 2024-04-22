@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -22,18 +23,29 @@ type ConfigDN struct {
 	FetchedConfig  map[string]ConfigValue
 }
 
-const version = "0.0.1"
+var ErrRefreshConfig = errors.New("error refreshing config")
+
+const version = "0.0.2"
 
 func (c ConfigDN) RefreshConfig(errorOnFail bool) error {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", c.Settings.Endpoint+"public_api/v1/get_config/", nil)
+	urlPath, err := url.JoinPath(c.Settings.Endpoint, "api/custom/v1/get_config/")
+
+	if err != nil {
+		if errorOnFail {
+			return ErrRefreshConfig
+		}
+		return nil
+	}
+
+	req, _ := http.NewRequest("GET", urlPath, nil)
 	req.Header.Add("ConfigDN-Client-Version", "ConfigDN-Go/"+version)
 	req.Header.Add("Authorization", c.Settings.AuthKey)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		if errorOnFail {
-			return errors.New("error refreshing config")
+			return ErrRefreshConfig
 		}
 		return nil
 	}
@@ -41,7 +53,7 @@ func (c ConfigDN) RefreshConfig(errorOnFail bool) error {
 	json.NewDecoder(resp.Body).Decode(&decodedResponse)
 	if !decodedResponse.S {
 		if errorOnFail {
-			return errors.New("error refreshing config")
+			return ErrRefreshConfig
 		}
 		return nil
 	}
